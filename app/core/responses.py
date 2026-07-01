@@ -1,7 +1,8 @@
 from typing import Any
 
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+
+from app.core.actions_json_response import ActionsJSONResponse
 
 
 def _envelope(
@@ -29,7 +30,7 @@ def success_response(
     *,
     meta: dict[str, Any] | None = None,
 ):
-    return JSONResponse(
+    return ActionsJSONResponse(
         status_code=200,
         content=_envelope(success=True, message=message, data=data, error=None, meta=meta),
     )
@@ -44,7 +45,7 @@ def error_response(
     meta: dict[str, Any] | None = None,
 ):
     error = {"code": code, "recoverable": recoverable} if code else None
-    return JSONResponse(
+    return ActionsJSONResponse(
         status_code=status_code,
         content=_envelope(
             success=False,

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi.responses import JSONResponse
+from app.core.actions_json_response import ActionsJSONResponse
 
 from app.domain.services.ctx_agent_response_clarity_service import CtxAgentResponseClarityService
 from app.domain.services.ctx_delpi_operation_mapping import DELPI_TO_CTX_OPERATION_ID
@@ -23,13 +23,13 @@ class CtxApiDelpiDelegationService:
     def enabled(self) -> bool:
         return self._gateway.configured
 
-    def _misconfigured_response(self) -> JSONResponse:
+    def _misconfigured_response(self) -> ActionsJSONResponse:
         agent_context = CtxAgentResponseClarityService.build_error_agent_context(
             error_code="API_DELPI_MISCONFIGURED",
             recoverable=False,
             interpretation_key="error.misconfigured",
         )
-        return JSONResponse(
+        return ActionsJSONResponse(
             status_code=503,
             content={
                 "success": False,
@@ -199,7 +199,7 @@ class CtxApiDelpiDelegationService:
         ctx_operation_id: str,
         query: dict[str, Any] | None = None,
         json_body: Any = None,
-    ) -> JSONResponse:
+    ) -> ActionsJSONResponse:
         if not self.enabled():
             return self._misconfigured_response()
         delpi_path = self._resolve_path(path_prefix, path_suffix)
@@ -218,7 +218,7 @@ class CtxApiDelpiDelegationService:
                 recoverable=True,
                 interpretation_key="error.gateway",
             )
-            return JSONResponse(
+            return ActionsJSONResponse(
                 status_code=code,
                 content={
                     "success": False,
@@ -236,13 +236,13 @@ class CtxApiDelpiDelegationService:
                 request_query=enrich_query,
                 branch_meta=branch_meta,
             )
-            return JSONResponse(status_code=status, content=payload)
+            return ActionsJSONResponse(status_code=status, content=payload)
         agent_context = CtxAgentResponseClarityService.build_error_agent_context(
             error_code="API_DELPI_BAD_RESPONSE",
             recoverable=True,
             interpretation_key="error.bad_response",
         )
-        return JSONResponse(
+        return ActionsJSONResponse(
             status_code=502,
             content={
                 "success": False,
