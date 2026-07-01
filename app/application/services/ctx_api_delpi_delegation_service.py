@@ -45,6 +45,54 @@ class CtxApiDelpiDelegationService:
             payload = {**payload, "meta": meta}
         return payload
 
+    def _normalize_paged_list_null_pagination(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """api-delpi devolve page/page_size null em listas vazias — ChatGPT Actions falha na validação."""
+        data = payload.get("data")
+        if not isinstance(data, dict) or "items" not in data:
+            return payload
+
+        items = data.get("items")
+        if not isinstance(items, list):
+            return payload
+
+        total = data.get("total")
+        if total is None:
+            total = len(items)
+
+        page = data.get("page") if data.get("page") is not None else 1
+        page_size = data.get("page_size")
+        if page_size is None:
+            page_size = len(items) if items else 0
+
+        total_pages = data.get("total_pages")
+        if total_pages is None:
+            if total == 0 or page_size == 0:
+                total_pages = 0
+            else:
+                total_pages = (int(total) + int(page_size) - 1) // int(page_size)
+
+        normalized_data = {
+            **data,
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+            "total_pages": total_pages,
+        }
+        payload = {**payload, "data": normalized_data}
+
+        meta = payload.get("meta")
+        if isinstance(meta, dict) and isinstance(meta.get("pagination"), dict):
+            pagination = {
+                **meta["pagination"],
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+                "total_pages": total_pages,
+            }
+            payload = {**payload, "meta": {**meta, "pagination": pagination}}
+
+        return payload
+
     def _resolve_path(self, path_prefix: str, path_suffix: str) -> str:
         prefix = path_prefix.rstrip("/")
         if not path_suffix:
@@ -85,6 +133,7 @@ class CtxApiDelpiDelegationService:
             )
         if isinstance(payload, dict):
             payload = self._rewrite_meta(payload, ctx_operation_id)
+            payload = self._normalize_paged_list_null_pagination(payload)
             return JSONResponse(status_code=status, content=payload)
         return JSONResponse(
             status_code=502,

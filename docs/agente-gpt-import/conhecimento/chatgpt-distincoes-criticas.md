@@ -88,7 +88,22 @@ Em rotas de produção, `product_type` pode ser `PA` (produto acabado) ou `PI` (
 
 ---
 
-## 10. Linguagem com o analista
+## 11. Lista vazia ≠ erro de API
+
+Rotas `paged_list` (ex.: `ctx_get_product_guide`, `ctx_search_products`, `ctx_list_nonconformities`) podem retornar:
+
+```json
+{ "success": true, "data": { "items": [], "total": 0, "page": 1, "page_size": 0 } }
+```
+
+| Interpretação | Correto | Incorreto |
+|---------------|---------|-----------|
+| `items: []`, `total: 0` | Sem roteiro / sem NC / sem match no filtro | «Erro de comunicação com a API» |
+| `success: false` ou HTTP 5xx | Falha técnica real | Tratar como dado ausente |
+
+Para **roteiro vazio** do PA: informar ao analista que o ERP não tem operações SG2 cadastradas para aquele código/filial — sugerir estrutura (BOM) ou status de produção.
+
+---
 
 Ao explicar distinções, use exemplos de chão de fábrica:
 

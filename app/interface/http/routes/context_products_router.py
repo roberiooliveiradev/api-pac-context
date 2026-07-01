@@ -119,7 +119,15 @@ def get_product_structure_exclusivity(
     )
 
 
-@router.get("/{code}/guide", operation_id="ctx_get_product_guide")
+@router.get(
+    "/{code}/guide",
+    operation_id="ctx_get_product_guide",
+    summary="Roteiro de fabricação (SG2)",
+    description=(
+        "Operações e centros de trabalho do produto. `items` vazio com `success: true` "
+        "significa **sem roteiro cadastrado** no ERP — não é erro de API. Informe `branch` 01 ou 02."
+    ),
+)
 def get_product_guide(
     code: str,
     branch: str | None = Query(default=None, min_length=2, max_length=2),

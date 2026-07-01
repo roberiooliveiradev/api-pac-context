@@ -55,3 +55,35 @@ def test_delpi_to_ctx_mapping_keys():
         "ctx_get_product_production_status"
     )
     assert len(DELPI_TO_CTX_OPERATION_ID) == 28
+
+
+def test_delegation_normalizes_null_pagination_for_paged_list():
+    gateway = MagicMock()
+    gateway.configured = True
+    gateway.request_json.return_value = (
+        200,
+        {},
+        {
+            "success": True,
+            "data": {"items": [], "page": None, "page_size": None, "total": 0, "total_pages": None},
+            "meta": {
+                "operationId": "get_product_guide",
+                "pagination": {"page": None, "page_size": None, "total": 0, "total_pages": None},
+            },
+        },
+    )
+    service = CtxApiDelpiDelegationService(gateway=gateway)
+    response = service.forward_json(
+        method="GET",
+        path_prefix=PRODUCTS_API_PREFIX,
+        path_suffix="/90260442/guide",
+        ctx_operation_id="ctx_get_product_guide",
+        query={"branch": "01"},
+    )
+    import json
+
+    body = json.loads(response.body.decode())
+    assert body["data"]["page"] == 1
+    assert body["data"]["page_size"] == 0
+    assert body["data"]["total_pages"] == 0
+    assert body["meta"]["pagination"]["page"] == 1
