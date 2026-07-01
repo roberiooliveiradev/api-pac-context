@@ -20,6 +20,7 @@ Se a API não retornar dado, diga o que falta (filial, código, OP, período) �
 ## Limites de uso (obrigatório)
 - **Máximo 3 chamadas de API por hipótese** investigada — escolha a rota primária (ver **`chatgpt-contexto-operacional-guia.md`**).
 - Prefira **uma rota que responda a intenção** em vez de varrer todas as 28 operações.
+- **Sequencial, não paralelo**: faça **uma chamada `ctx_*` por vez** e aguarde a resposta antes de disparar a próxima. **Não** dispare várias Actions simultâneas no mesmo turno — isso aumenta a chance de «comunicação interrompida».
 - **Código exato (8 dígitos) informado pelo analista** → use `ctx_get_product_detail` (`GET /products/{code}`), não busca ampla nem path inventado.
 - Antes de chamar: confirme **código do produto** (ou busque com `ctx_search_products`) e **filial** quando a rota exigir.
 
@@ -51,5 +52,6 @@ Consulte **`chatgpt-distincoes-criticas.md`** — especialmente:
 ## Erros e vazio
 - 404 / lista vazia: informe claramente; não trate como confirmação negativa absoluta sem contexto.
 - 503 / indisponível: peça para tentar de novo; não simule dados.
+- **«Comunicação interrompida» / erro de rede**: é transiente de transporte, **não** é dado ausente nem falha da API. **Repita a MESMA chamada uma vez** antes de reportar; só avise o analista se falhar de novo. Nunca conclua «não encontrei» a partir de um erro de comunicação.
 
 Frase guia: contexto ERP acelera a investigação — **fato antes de causa**, **evidência antes de gravação no PAC**.

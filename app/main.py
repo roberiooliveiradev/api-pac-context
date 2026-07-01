@@ -18,6 +18,9 @@ from app.interface.http.middleware.ctx_auth_middleware import ctx_auth_middlewar
 from app.interface.http.middleware.normalize_query_params_middleware import (
     normalize_query_params_middleware,
 )
+from app.interface.http.middleware.request_logging_middleware import (
+    request_logging_middleware,
+)
 from app.interface.http.middleware.strip_trailing_slash_middleware import (
     strip_trailing_slash_middleware,
 )
@@ -73,6 +76,7 @@ app.add_middleware(
 app.middleware("http")(strip_trailing_slash_middleware)
 app.middleware("http")(normalize_query_params_middleware)
 app.middleware("http")(ctx_auth_middleware)
+app.middleware("http")(request_logging_middleware)
 app.openapi = lambda: build_openapi_schema(app)
 app.include_router(products_router)
 app.include_router(production_router)
