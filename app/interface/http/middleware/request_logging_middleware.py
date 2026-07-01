@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import logging
 import time
 
 from fastapi import Request
 
-logger = logging.getLogger("ctx.request")
+from app.utils.logger import get_logger
+
+logger = get_logger("ctx.request")
 
 
 def _client_ip(request: Request) -> str:

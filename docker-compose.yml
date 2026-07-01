@@ -26,6 +26,10 @@ services:
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-https://pac-context-api.minhadelpi.com.br}
     expose:
       - "8011"
+    volumes:
+      # Logs de request persistentes (sobrevivem a recreate/deploy).
+      # Default: ./logs ao lado do compose; override via PAC_CONTEXT_LOG_DIR.
+      - ${PAC_CONTEXT_LOG_DIR:-./logs}:/app/logs
     healthcheck:
       test:
         [
