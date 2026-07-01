@@ -52,3 +52,9 @@ chmod +x scripts/ci-smoke.sh
 | P1 | 10 rotas produto |
 | P2 | +18 rotas PCP/qualidade (allowlist §8 — **28 ops**) |
 | P3 | Composites (`ctx_investigate_product`, …) |
+
+## Custom GPT (importação)
+
+Pacote para **Instruções** e **Conhecimento** do agente: [`docs/agente-gpt-import/README.md`](docs/agente-gpt-import/README.md)
+
+Guia de setup: [`docs/chatgpt-agente-contexto-operacional.md`](docs/chatgpt-agente-contexto-operacional.md)
