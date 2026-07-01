@@ -102,8 +102,8 @@ def get_product_summary(code: str):
 def get_product_structure(
     code: str,
     max_depth: int | None = Query(default=None, ge=1, le=100),
-    page: int | None = Query(default=None, ge=1),
-    page_size: int | None = Query(default=None, ge=1, le=500),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=50, ge=1, le=500),
 ):
     return delegate_json(
         method="GET",
@@ -147,8 +147,8 @@ def get_product_structure_exclusivity(
 def get_product_guide(
     code: str,
     branch: str | None = Query(default=None, min_length=2, max_length=2),
-    page: int | None = Query(default=None, ge=1),
-    page_size: int | None = Query(default=None, ge=1, le=500),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=50, ge=1, le=500),
     max_depth: int | None = Query(default=None, ge=1, le=15),
 ):
     return delegate_json(
@@ -171,8 +171,8 @@ def get_product_guide(
 )
 def get_product_inspection(
     code: str,
-    page: int | None = Query(default=None, ge=1),
-    page_size: int | None = Query(default=None, ge=1, le=500),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=50, ge=1, le=500),
     max_depth: int | None = Query(default=None, ge=1, le=15),
 ):
     return delegate_json(
@@ -349,8 +349,8 @@ def get_product_internal_movements(
 def get_product_parents(
     code: str,
     max_depth: int | None = Query(default=None),
-    page: int | None = Query(default=None),
-    page_size: int | None = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=50, ge=1, le=500),
 ):
     return delegate_json(
         method="GET",

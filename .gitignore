@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .env
+docker-compose.override.yml
 *.egg-info/
 dist/
 build/
