@@ -15,6 +15,9 @@ from app.application.services.ctx_api_delpi_delegation_service import (
 from app.config import settings
 from app.core.responses import error_response, not_found_response
 from app.interface.http.middleware.ctx_auth_middleware import ctx_auth_middleware
+from app.interface.http.middleware.normalize_query_params_middleware import (
+    normalize_query_params_middleware,
+)
 from app.interface.http.openapi_schema import build_openapi_schema
 from app.interface.http.routes.context_inspecoes_entrada_router import (
     router as inspecoes_entrada_router,
@@ -63,6 +66,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.middleware("http")(normalize_query_params_middleware)
 app.middleware("http")(ctx_auth_middleware)
 app.openapi = lambda: build_openapi_schema(app)
 app.include_router(products_router)
