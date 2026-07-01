@@ -17,7 +17,15 @@ def _query_params(**kwargs: Any) -> dict[str, Any]:
     return {key: value for key, value in kwargs.items() if value is not None}
 
 
-@router.get("/historico", operation_id="ctx_get_inspecoes_entrada_historico")
+@router.get(
+    "/historico",
+    operation_id="ctx_get_inspecoes_entrada_historico",
+    summary="Histórico de inspeções de entrada (MP)",
+    description=(
+        "Laudos de recebimento de matéria-prima. **`branch` obrigatório** (01 ou 02). "
+        "Lista vazia = sem inspeções no filtro — não é erro de API."
+    ),
+)
 def get_inspecoes_entrada_historico(
     branch: str = Query(..., min_length=2, max_length=2, pattern="^(01|02)$"),
     page: int = Query(default=1, ge=1),
@@ -52,7 +60,15 @@ def get_inspecoes_entrada_historico(
     )
 
 
-@router.get("/historico/detalhe", operation_id="ctx_get_inspecoes_entrada_detalhe")
+@router.get(
+    "/historico/detalhe",
+    operation_id="ctx_get_inspecoes_entrada_detalhe",
+    summary="Detalhe de inspeção de entrada",
+    description=(
+        "Detalhe de um laudo específico. Requer `branch` e `inspection_id`. "
+        "Objeto vazio → `meta.agentContext.queryStatus=empty`."
+    ),
+)
 def get_inspecoes_entrada_detalhe(
     branch: str = Query(..., min_length=2, max_length=2, pattern="^(01|02)$"),
     inspection_id: str = Query(..., min_length=1),

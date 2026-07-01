@@ -1,0 +1,39 @@
+{
+  "interpretations": {
+    "paged_list.empty": "Consulta concluída sem registros no ERP para os filtros informados.",
+    "paged_list.ok": "Consulta concluída com {recordCount} registro(s) nesta resposta.",
+    "hierarchy.empty": "Consulta concluída sem componentes na estrutura hierárquica.",
+    "hierarchy.ok": "Estrutura hierárquica com {recordCount} componente(s).",
+    "playbook_report.empty": "Relatório operacional sem linhas para o período ou filtros informados.",
+    "playbook_report.ok": "Relatório operacional com {recordCount} linha(s) ou seção(ões) com dados.",
+    "composite_analysis.empty": "Análise composta sem dados operacionais para os parâmetros.",
+    "composite_analysis.ok": "Análise composta disponível — revise as seções em data.",
+    "product_snapshot.empty": "Cadastro do produto não localizado ou vazio no ERP.",
+    "product_snapshot.ok": "Cadastro do produto localizado.",
+    "scalar.empty": "Valor escalar ausente para os parâmetros informados.",
+    "scalar.not_found": "Recurso escalar não encontrado (ex.: desenho inexistente).",
+    "scalar.ok": "Valor escalar retornado — veja os campos em data.",
+    "object.empty": "Detalhe não encontrado ou objeto vazio.",
+    "object.ok": "Detalhe retornado — veja os campos em data.",
+    "error.gateway": "Falha ao contactar a api-delpi — trate como erro técnico, não como dado ausente no ERP.",
+    "error.misconfigured": "API PAC Context sem credenciais da api-delpi — erro de infraestrutura.",
+    "error.bad_response": "Resposta inválida da api-delpi — erro técnico."
+  },
+  "operationEmptyHints": {
+    "ctx_search_products": "Nenhum produto corresponde aos filtros. Para código exato de 8 dígitos, use ctx_get_product_detail.",
+    "ctx_get_product_guide": "Sem roteiro SG2 cadastrado para o produto/filial — não é falha de API. Considere estrutura (BOM) ou status de produção.",
+    "ctx_get_product_inspection": "Sem plano de inspeção cadastrado no produto — não confundir com resultado de lote ou OP específica.",
+    "ctx_get_product_structure": "Sem componentes na BOM para o produto — verifique código e profundidade (max_depth).",
+    "ctx_get_product_parents": "Este item não aparece como componente de nenhum PA/PI na BOM para cima.",
+    "ctx_get_product_drawing": "Desenho PDF não localizado na biblioteca (data.found=false).",
+    "ctx_get_product_stock": "Sem saldo de estoque para o produto nos filtros informados.",
+    "ctx_get_product_internal_movements": "Sem movimentos internos no período/filtros informados.",
+    "ctx_list_nonconformities": "Sem NCs no Protheus para os filtros — não substitui busca no PAC (pac_search_similar_cases).",
+    "ctx_get_inspecoes_entrada_historico": "Sem inspeções de entrada no histórico para a filial/filtros.",
+    "ctx_get_inspecoes_entrada_detalhe": "Detalhe da inspeção de entrada não encontrado — confira branch e inspection_id.",
+    "ctx_get_production_schedule_today": "Sem programação PCP para a data de referência informada.",
+    "ctx_get_production_orders_open": "Sem ordens de produção abertas na janela consultada.",
+    "ctx_get_production_orders_finished": "Sem ordens finalizadas na janela consultada.",
+    "ctx_list_production_oee": "Sem apontamentos OEE para os filtros informados."
+  }
+}

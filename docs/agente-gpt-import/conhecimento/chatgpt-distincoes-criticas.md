@@ -105,6 +105,24 @@ Para **roteiro vazio** do PA: informar ao analista que o ERP não tem operaçõe
 
 ---
 
+## 12. `meta.agentContext` — leitura obrigatória
+
+Toda resposta delegada (28 rotas) inclui em `meta.agentContext`:
+
+| Campo | Uso |
+|-------|-----|
+| `queryStatus` | `ok` = há dados · `empty` = consulta ok, sem registros · `not_found` = recurso ausente (ex. desenho) · `error` = falha técnica |
+| `hasData` / `emptyResult` | Atalho booleano — **não** tratar `emptyResult: true` como erro de API |
+| `recordCount` | Quantidade inferida pelo shape (itens, linhas, cadastro) |
+| `interpretation` | Texto PT pronto para o analista — priorize sobre suposições |
+| `shape` / `entity` | Tipo de contrato (`paged_list`, `playbook_report`, …) |
+
+**Fluxo:** ler `success` → se `true`, ler `meta.agentContext.queryStatus` → usar `interpretation` na resposta ao analista → só então detalhar `data`.
+
+Erros de gateway (`API_DELPI_UNAVAILABLE`) trazem `agentContext` com `queryStatus: error` — distinto de lista vazia no ERP.
+
+---
+
 Ao explicar distinções, use exemplos de chão de fábrica:
 
 - ❌ «O `ctx_get_product_inspection` não tem dados do lote»

@@ -75,7 +75,12 @@ def get_product_detail(
     )
 
 
-@router.get("/{code}/summary", operation_id="ctx_get_product_summary")
+@router.get(
+    "/{code}/summary",
+    operation_id="ctx_get_product_summary",
+    summary="Resumo cadastral do produto",
+    description="Visão resumida do cadastro. Para código exato completo, prefira `ctx_get_product_detail`.",
+)
 def get_product_summary(code: str):
     return delegate_json(
         method="GET",
@@ -85,7 +90,15 @@ def get_product_summary(code: str):
     )
 
 
-@router.get("/{code}/structure", operation_id="ctx_get_product_structure")
+@router.get(
+    "/{code}/structure",
+    operation_id="ctx_get_product_structure",
+    summary="Estrutura BOM (para baixo)",
+    description=(
+        "Componentes do produto (PA/PI/MP). `items` vazio com `success: true` = sem BOM vigente — "
+        "não é erro de API. Ver `meta.agentContext.interpretation`."
+    ),
+)
 def get_product_structure(
     code: str,
     max_depth: int | None = Query(default=None, ge=1, le=100),
@@ -104,6 +117,8 @@ def get_product_structure(
 @router.get(
     "/{code}/structure/exclusivity",
     operation_id="ctx_get_product_structure_exclusivity",
+    summary="Exclusividade de MPs na estrutura",
+    description="MPs exclusivas e alternativas na BOM. Lista vazia = sem componentes exclusivos cadastrados.",
 )
 def get_product_structure_exclusivity(
     code: str,
@@ -144,7 +159,15 @@ def get_product_guide(
     )
 
 
-@router.get("/{code}/inspection", operation_id="ctx_get_product_inspection")
+@router.get(
+    "/{code}/inspection",
+    operation_id="ctx_get_product_inspection",
+    summary="Plano de inspeção cadastrado (QP)",
+    description=(
+        "Ensaios **cadastrados** no produto — não é resultado de lote/OP específica. "
+        "`items` vazio = sem plano no ERP. Ver `meta.agentContext`."
+    ),
+)
 def get_product_inspection(
     code: str,
     page: int | None = Query(default=None, ge=1),
@@ -160,7 +183,12 @@ def get_product_inspection(
     )
 
 
-@router.get("/{code}/production-status", operation_id="ctx_get_product_production_status")
+@router.get(
+    "/{code}/production-status",
+    operation_id="ctx_get_product_production_status",
+    summary="Status de produção do produto",
+    description="OPs e apontamentos por nível da estrutura. Informe `reference_date` e `branch` quando possível.",
+)
 def get_product_production_status(
     code: str,
     reference_date: str | None = Query(default=None),
@@ -182,7 +210,15 @@ def get_product_production_status(
     )
 
 
-@router.get("/{code}/factory-status", operation_id="ctx_get_product_factory_status")
+@router.get(
+    "/{code}/factory-status",
+    operation_id="ctx_get_product_factory_status",
+    summary="Panorama integrado de fábrica",
+    description=(
+        "Análise composta (estrutura + OP + expedição). `meta.agentContext.hasData=true` "
+        "mesmo com seções vazias se houver `factory_status`."
+    ),
+)
 def get_product_factory_status(
     code: str,
     reference_date: str | None = Query(default=None),
@@ -208,7 +244,12 @@ def get_product_factory_status(
     )
 
 
-@router.get("/{code}/shipping-status", operation_id="ctx_get_product_shipping_status")
+@router.get(
+    "/{code}/shipping-status",
+    operation_id="ctx_get_product_shipping_status",
+    summary="Status pós-inspeção final / expedição",
+    description="Quantidades liberadas após inspeção final do PA — distinto do plano QP em `/inspection`.",
+)
 def get_product_shipping_status(
     code: str,
     reference_date: str | None = Query(default=None),
@@ -232,7 +273,12 @@ def get_product_shipping_status(
     )
 
 
-@router.get("/{code}/stock", operation_id="ctx_get_product_stock")
+@router.get(
+    "/{code}/stock",
+    operation_id="ctx_get_product_stock",
+    summary="Saldo de estoque do produto",
+    description="Posição atual por filial/armazém. Lista vazia = sem saldo nos filtros — não é erro de API.",
+)
 def get_product_stock(
     code: str,
     page: int = Query(default=1, ge=1),
@@ -258,7 +304,12 @@ def get_product_stock(
     )
 
 
-@router.get("/{code}/internal-movements", operation_id="ctx_get_product_internal_movements")
+@router.get(
+    "/{code}/internal-movements",
+    operation_id="ctx_get_product_internal_movements",
+    summary="Movimentos internos do produto",
+    description="Histórico de movimentações internas (incl. OP). Filtre por período e filial.",
+)
 def get_product_internal_movements(
     code: str,
     page: int = Query(default=1, ge=1),
@@ -288,7 +339,12 @@ def get_product_internal_movements(
     )
 
 
-@router.get("/{code}/parents", operation_id="ctx_get_product_parents")
+@router.get(
+    "/{code}/parents",
+    operation_id="ctx_get_product_parents",
+    summary="Onde o item é usado (BOM para cima)",
+    description="PA/PI que consomem este código como componente. Vazio = item não aparece como MP/PI em outras estruturas.",
+)
 def get_product_parents(
     code: str,
     max_depth: int | None = Query(default=None),
@@ -304,7 +360,15 @@ def get_product_parents(
     )
 
 
-@router.get("/{code}/drawing", operation_id="ctx_get_product_drawing")
+@router.get(
+    "/{code}/drawing",
+    operation_id="ctx_get_product_drawing",
+    summary="Metadados do desenho PDF",
+    description=(
+        "Metadados apenas (não baixa o PDF). `data.found=false` = desenho ausente na biblioteca — "
+        "veja `meta.agentContext.queryStatus=not_found`."
+    ),
+)
 def get_product_drawing(code: str):
     return delegate_json(
         method="GET",

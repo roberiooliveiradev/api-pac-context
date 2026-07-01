@@ -5,6 +5,7 @@ from typing import Any
 
 from fastapi.responses import JSONResponse
 
+from app.domain.services.ctx_agent_response_clarity_service import CtxAgentResponseClarityService
 from app.domain.services.ctx_delpi_operation_mapping import DELPI_TO_CTX_OPERATION_ID
 from app.infrastructure.gateways.api_delpi_gateway import ApiDelpiGateway, ApiDelpiGatewayError
 
@@ -19,6 +20,11 @@ class CtxApiDelpiDelegationService:
         return self._gateway.configured
 
     def _misconfigured_response(self) -> JSONResponse:
+        agent_context = CtxAgentResponseClarityService.build_error_agent_context(
+            error_code="API_DELPI_MISCONFIGURED",
+            recoverable=False,
+            interpretation_key="error.misconfigured",
+        )
         return JSONResponse(
             status_code=503,
             content={
@@ -29,6 +35,7 @@ class CtxApiDelpiDelegationService:
                 ),
                 "data": None,
                 "error": {"code": "API_DELPI_MISCONFIGURED", "recoverable": False},
+                "meta": {"agentContext": agent_context},
             },
         )
 
@@ -45,53 +52,8 @@ class CtxApiDelpiDelegationService:
             payload = {**payload, "meta": meta}
         return payload
 
-    def _normalize_paged_list_null_pagination(self, payload: dict[str, Any]) -> dict[str, Any]:
-        """api-delpi devolve page/page_size null em listas vazias — ChatGPT Actions falha na validação."""
-        data = payload.get("data")
-        if not isinstance(data, dict) or "items" not in data:
-            return payload
-
-        items = data.get("items")
-        if not isinstance(items, list):
-            return payload
-
-        total = data.get("total")
-        if total is None:
-            total = len(items)
-
-        page = data.get("page") if data.get("page") is not None else 1
-        page_size = data.get("page_size")
-        if page_size is None:
-            page_size = len(items) if items else 0
-
-        total_pages = data.get("total_pages")
-        if total_pages is None:
-            if total == 0 or page_size == 0:
-                total_pages = 0
-            else:
-                total_pages = (int(total) + int(page_size) - 1) // int(page_size)
-
-        normalized_data = {
-            **data,
-            "page": page,
-            "page_size": page_size,
-            "total": total,
-            "total_pages": total_pages,
-        }
-        payload = {**payload, "data": normalized_data}
-
-        meta = payload.get("meta")
-        if isinstance(meta, dict) and isinstance(meta.get("pagination"), dict):
-            pagination = {
-                **meta["pagination"],
-                "page": page,
-                "page_size": page_size,
-                "total": total,
-                "total_pages": total_pages,
-            }
-            payload = {**payload, "meta": {**meta, "pagination": pagination}}
-
-        return payload
+    def _enrich_for_agent(self, payload: dict[str, Any], ctx_operation_id: str) -> dict[str, Any]:
+        return CtxAgentResponseClarityService.enrich_success_payload(payload, ctx_operation_id)
 
     def _resolve_path(self, path_prefix: str, path_suffix: str) -> str:
         prefix = path_prefix.rstrip("/")
@@ -122,6 +84,11 @@ class CtxApiDelpiDelegationService:
             )
         except ApiDelpiGatewayError as exc:
             code = exc.status_code or 503
+            agent_context = CtxAgentResponseClarityService.build_error_agent_context(
+                error_code="API_DELPI_UNAVAILABLE",
+                recoverable=True,
+                interpretation_key="error.gateway",
+            )
             return JSONResponse(
                 status_code=code,
                 content={
@@ -129,12 +96,18 @@ class CtxApiDelpiDelegationService:
                     "message": str(exc),
                     "data": None,
                     "error": {"code": "API_DELPI_UNAVAILABLE", "recoverable": True},
+                    "meta": {"agentContext": agent_context},
                 },
             )
         if isinstance(payload, dict):
             payload = self._rewrite_meta(payload, ctx_operation_id)
-            payload = self._normalize_paged_list_null_pagination(payload)
+            payload = self._enrich_for_agent(payload, ctx_operation_id)
             return JSONResponse(status_code=status, content=payload)
+        agent_context = CtxAgentResponseClarityService.build_error_agent_context(
+            error_code="API_DELPI_BAD_RESPONSE",
+            recoverable=True,
+            interpretation_key="error.bad_response",
+        )
         return JSONResponse(
             status_code=502,
             content={
@@ -142,6 +115,7 @@ class CtxApiDelpiDelegationService:
                 "message": "Resposta inválida da api-delpi.",
                 "data": None,
                 "error": {"code": "API_DELPI_BAD_RESPONSE", "recoverable": True},
+                "meta": {"agentContext": agent_context},
             },
         )
 

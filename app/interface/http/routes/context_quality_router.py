@@ -14,7 +14,15 @@ def _query_params(**kwargs: Any) -> dict[str, Any]:
     return {key: value for key, value in kwargs.items() if value is not None}
 
 
-@router.get("/nonconformities", operation_id="ctx_list_nonconformities")
+@router.get(
+    "/nonconformities",
+    operation_id="ctx_list_nonconformities",
+    summary="NCs no Protheus (TOTVS)",
+    description=(
+        "Registros de não conformidade no ERP — **não** substitui planos de ação do PAC. "
+        "`items` vazio = sem NC nos filtros; veja `meta.agentContext`."
+    ),
+)
 def list_nonconformities(
     type: str = Query(default="all", pattern="^(internal|external|all)$"),
     branch: str | None = Query(default=None),
@@ -45,7 +53,14 @@ def list_nonconformities(
     )
 
 
-@router.get("/produced-quantity", operation_id="ctx_get_produced_quantity")
+@router.get(
+    "/produced-quantity",
+    operation_id="ctx_get_produced_quantity",
+    summary="Quantidade produzida (PPM)",
+    description=(
+        "Volume agregado por produto/período para indicadores PPM — não substitui rastreio por OP ou lote."
+    ),
+)
 def get_produced_quantity(
     product: list[str] = Query(
         ...,

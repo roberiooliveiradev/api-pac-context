@@ -14,7 +14,12 @@ def _query_params(**kwargs: Any) -> dict[str, Any]:
     return {key: value for key, value in kwargs.items() if value is not None}
 
 
-@router.get("/orders/by-op/{production_order}", operation_id="ctx_get_production_order_by_op")
+@router.get(
+    "/orders/by-op/{production_order}",
+    operation_id="ctx_get_production_order_by_op",
+    summary="Detalhe da OP por número",
+    description="Consulta OP específica com vínculos. Use para rastrear lote reclamado quando o número da OP é conhecido.",
+)
 def get_production_order_by_op(
     production_order: str,
     branch: str | None = Query(default=None, min_length=2, max_length=2),
@@ -39,6 +44,8 @@ def get_production_order_by_op(
 @router.get(
     "/oee/appointments/{appointment_id}",
     operation_id="ctx_get_production_oee_appointment",
+    summary="Apontamento OEE por ID",
+    description="Detalhe do que foi executado na máquina (análise composta). Distinto do roteiro SG2 do produto.",
 )
 def get_production_oee_appointment(
     appointment_id: int,
@@ -53,7 +60,15 @@ def get_production_oee_appointment(
     )
 
 
-@router.get("/oee", operation_id="ctx_list_production_oee")
+@router.get(
+    "/oee",
+    operation_id="ctx_list_production_oee",
+    summary="Listagem de apontamentos OEE",
+    description=(
+        "Paginação de apontamentos reais. `items` vazio com `success: true` = sem apontamentos nos filtros — "
+        "veja `meta.agentContext`."
+    ),
+)
 def list_production_oee(
     branch: str | None = Query(default=None),
     start_date: str | None = Query(default=None),
@@ -92,7 +107,12 @@ def list_production_oee(
     )
 
 
-@router.get("/schedule/today", operation_id="ctx_get_production_schedule_today")
+@router.get(
+    "/schedule/today",
+    operation_id="ctx_get_production_schedule_today",
+    summary="Programação PCP do dia",
+    description="O que o PCP planejou para a data — distinto do roteiro de engenharia (`ctx_get_product_guide`).",
+)
 def get_production_schedule_today(
     reference_date: str | None = Query(default=None),
     branch: str | None = Query(default=None, min_length=2, max_length=2),
@@ -107,7 +127,12 @@ def get_production_schedule_today(
     )
 
 
-@router.get("/orders/open", operation_id="ctx_get_production_orders_open")
+@router.get(
+    "/orders/open",
+    operation_id="ctx_get_production_orders_open",
+    summary="OPs abertas",
+    description="Ordens em aberto na janela de referência. Lista vazia = nenhuma OP aberta nos filtros.",
+)
 def get_production_orders_open(
     reference_date: str | None = Query(default=None),
     branch: str | None = Query(default=None, min_length=2, max_length=2),
@@ -128,7 +153,12 @@ def get_production_orders_open(
     )
 
 
-@router.get("/orders/finished", operation_id="ctx_get_production_orders_finished")
+@router.get(
+    "/orders/finished",
+    operation_id="ctx_get_production_orders_finished",
+    summary="OPs finalizadas",
+    description="Ordens concluídas na janela. Lista vazia não indica falha de API.",
+)
 def get_production_orders_finished(
     reference_date: str | None = Query(default=None),
     branch: str | None = Query(default=None, min_length=2, max_length=2),
@@ -149,7 +179,12 @@ def get_production_orders_finished(
     )
 
 
-@router.get("/planned-vs-real-time", operation_id="ctx_get_production_planned_vs_real")
+@router.get(
+    "/planned-vs-real-time",
+    operation_id="ctx_get_production_planned_vs_real",
+    summary="Planejado vs realizado",
+    description="Comparativo de tempos planejados e apontados por centro de trabalho.",
+)
 def get_production_planned_vs_real(
     reference_date: str | None = Query(default=None),
     branch: str | None = Query(default=None, min_length=2, max_length=2),
@@ -170,7 +205,12 @@ def get_production_planned_vs_real(
     )
 
 
-@router.get("/losses/records", operation_id="ctx_get_production_losses_records")
+@router.get(
+    "/losses/records",
+    operation_id="ctx_get_production_losses_records",
+    summary="Registros de refugo/scrap",
+    description="Perdas registradas no período. Filtre `loss_type` (refugo, scrap, both).",
+)
 def get_production_losses_records(
     date_start: str | None = Query(default=None),
     date_end: str | None = Query(default=None),
@@ -193,7 +233,12 @@ def get_production_losses_records(
     )
 
 
-@router.get("/losses/top-materials", operation_id="ctx_get_production_losses_top_materials")
+@router.get(
+    "/losses/top-materials",
+    operation_id="ctx_get_production_losses_top_materials",
+    summary="Top materiais com perdas",
+    description="Ranking de MPs/itens com maior volume de refugo/scrap no período.",
+)
 def get_production_losses_top_materials(
     date_start: str | None = Query(default=None),
     date_end: str | None = Query(default=None),
@@ -219,6 +264,8 @@ def get_production_losses_top_materials(
 @router.get(
     "/consumption/by-item/{code}",
     operation_id="ctx_get_production_consumption_by_item",
+    summary="Consumo de MP na produção de PAs",
+    description="Quanto desta MP foi consumida na produção — distinto de estoque (`ctx_get_product_stock`).",
 )
 def get_production_consumption_by_item(
     code: str,

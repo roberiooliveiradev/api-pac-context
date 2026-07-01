@@ -87,3 +87,7 @@ def test_delegation_normalizes_null_pagination_for_paged_list():
     assert body["data"]["page_size"] == 0
     assert body["data"]["total_pages"] == 0
     assert body["meta"]["pagination"]["page"] == 1
+    agent = body["meta"]["agentContext"]
+    assert agent["queryStatus"] == "empty"
+    assert agent["emptyResult"] is True
+    assert "roteiro SG2" in agent["interpretation"]
