@@ -92,6 +92,25 @@ def test_product_snapshot_ok():
     assert agent["shape"] == "product_snapshot"
 
 
+def test_guide_empty_with_branch_suggests_alternate_filial():
+    payload = {
+        "success": True,
+        "data": {"items": [], "total": 0, "page": None, "page_size": None},
+    }
+
+    result = CtxAgentResponseClarityService.enrich_success_payload(
+        payload,
+        "ctx_get_product_guide",
+        request_query={"branch": "01"},
+    )
+
+    agent = result["meta"]["agentContext"]
+    assert agent["queryStatus"] == "empty"
+    assert agent["requestFilters"] == {"branch": "01"}
+    assert "filial 01" in agent["interpretation"]
+    assert "02" in agent["interpretation"]
+
+
 def test_error_agent_context():
     agent = CtxAgentResponseClarityService.build_error_agent_context(
         error_code="API_DELPI_UNAVAILABLE",

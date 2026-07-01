@@ -71,7 +71,10 @@ Ambos podem coexistir para o mesmo produto — **não** assumir que listar TOTVS
 ## 7. Filial
 
 - Muitas rotas aceitam `branch` opcional (`01` / `02`).
-- **Inspeções de entrada:** `branch` **obrigatório** — sem filial a API retorna erro de validação.
+- **Sem `branch`:** a pac-context-api consulta **01 e 02** e consolida o retorno (`meta.agentContext.consolidatedAcrossBranches=true`).
+- **Com `branch` e lista vazia:** a API tenta consolidar 01+02 automaticamente (`branchFallbackApplied=true`) — comum quando o roteiro está só na outra filial.
+- **Roteiro SG2 (`ctx_get_product_guide`):** cadastro é por filial; ex.: produto **90263382** tem roteiro na **02**, não na 01.
+- **Inspeções de entrada:** `branch` **obrigatório** — sem filial a API retorna erro de validação (não consolida).
 - Não inferir filial pelo cliente ou CEP; confirmar com o analista.
 
 ---
@@ -116,6 +119,8 @@ Toda resposta delegada (28 rotas) inclui em `meta.agentContext`:
 | `recordCount` | Quantidade inferida pelo shape (itens, linhas, cadastro) |
 | `interpretation` | Texto PT pronto para o analista — priorize sobre suposições |
 | `shape` / `entity` | Tipo de contrato (`paged_list`, `playbook_report`, …) |
+| `consolidatedAcrossBranches` | `true` = dados das filiais **01 e 02** reunidos (branch omitido) |
+| `branchFallbackApplied` | `true` = filial pedida veio vazia; API consolidou 01+02 |
 
 **Fluxo:** ler `success` → se `true`, ler `meta.agentContext.queryStatus` → usar `interpretation` na resposta ao analista → só então detalhar `data`.
 

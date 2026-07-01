@@ -21,12 +21,14 @@ def _load_bundle() -> dict[str, Any]:
 
 class CtxAgentResponseContentService:
     @staticmethod
-    def interpretation(key: str, *, record_count: int = 0) -> str:
+    def interpretation(key: str, *, record_count: int = 0, branch: str = "") -> str:
         interpretations = _load_bundle().get("interpretations") or {}
         template = str(interpretations.get(key) or "").strip()
         if not template:
             return ""
-        return template.replace("{recordCount}", str(record_count))
+        return (
+            template.replace("{recordCount}", str(record_count)).replace("{branch}", branch)
+        )
 
     @staticmethod
     def operation_empty_hint(operation_id: str) -> str:

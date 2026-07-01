@@ -22,7 +22,14 @@ _COMPOSITE_SIGNAL_KEYS = (
 
 class CtxAgentResponseClarityService:
     @classmethod
-    def enrich_success_payload(cls, payload: dict[str, Any], operation_id: str) -> dict[str, Any]:
+    def enrich_success_payload(
+        cls,
+        payload: dict[str, Any],
+        operation_id: str,
+        *,
+        request_query: dict[str, Any] | None = None,
+        branch_meta: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             return payload
 
@@ -34,7 +41,14 @@ class CtxAgentResponseClarityService:
         )
 
         payload = cls._normalize_data(payload, shape)
-        agent_context = cls._build_agent_context(payload, operation_id, shape, entity)
+        agent_context = cls._build_agent_context(
+            payload,
+            operation_id,
+            shape,
+            entity,
+            request_query=request_query,
+            branch_meta=branch_meta,
+        )
 
         meta = payload.get("meta")
         if not isinstance(meta, dict):
@@ -150,6 +164,9 @@ class CtxAgentResponseClarityService:
         operation_id: str,
         shape: str,
         entity: str,
+        *,
+        request_query: dict[str, Any] | None = None,
+        branch_meta: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         data = payload.get("data")
         record_count = cls._count_records(data, shape)
@@ -159,9 +176,11 @@ class CtxAgentResponseClarityService:
             shape,
             query_status,
             record_count,
+            request_query=request_query,
+            branch_meta=branch_meta,
         )
 
-        return {
+        agent_context: dict[str, Any] = {
             "queryStatus": query_status,
             "hasData": query_status == "ok",
             "emptyResult": query_status in {"empty", "not_found"},
@@ -172,6 +191,25 @@ class CtxAgentResponseClarityService:
             "interpretation": interpretation,
             "apiSuccess": payload.get("success") is True,
         }
+        branch = cls._extract_branch_filter(request_query)
+        if branch:
+            agent_context["requestFilters"] = {"branch": branch}
+        meta = branch_meta or {}
+        if meta.get("consolidatedAcrossBranches"):
+            agent_context["consolidatedAcrossBranches"] = True
+        if meta.get("branchFallbackApplied"):
+            agent_context["branchFallbackApplied"] = True
+        return agent_context
+
+    @staticmethod
+    def _extract_branch_filter(request_query: dict[str, Any] | None) -> str:
+        if not isinstance(request_query, dict):
+            return ""
+        branch = request_query.get("branch")
+        if branch is None:
+            return ""
+        token = str(branch).strip()
+        return token if len(token) == 2 else ""
 
     @classmethod
     def _resolve_query_status(
@@ -195,7 +233,33 @@ class CtxAgentResponseClarityService:
         shape: str,
         query_status: str,
         record_count: int,
+        *,
+        request_query: dict[str, Any] | None = None,
+        branch_meta: dict[str, Any] | None = None,
     ) -> str:
+        meta = branch_meta or {}
+        if meta.get("branchFallbackApplied"):
+            fallback = CtxAgentResponseContentService.interpretation("branch.fallback_consolidated")
+            if fallback:
+                return fallback
+        if meta.get("consolidatedAcrossBranches") and cls._extract_branch_filter(request_query) is None:
+            consolidated = CtxAgentResponseContentService.interpretation("branch.consolidated")
+            if consolidated and query_status == "ok":
+                return consolidated
+
+        branch = cls._extract_branch_filter(request_query)
+        if (
+            operation_id == "ctx_get_product_guide"
+            and query_status == "empty"
+            and branch
+        ):
+            branch_hint = CtxAgentResponseContentService.interpretation(
+                "guide.empty_with_branch",
+                branch=branch,
+            )
+            if branch_hint:
+                return branch_hint
+
         if query_status in {"empty", "not_found"}:
             operation_hint = CtxAgentResponseContentService.operation_empty_hint(operation_id)
             if operation_hint:

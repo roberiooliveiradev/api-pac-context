@@ -57,6 +57,82 @@ def test_delpi_to_ctx_mapping_keys():
     assert len(DELPI_TO_CTX_OPERATION_ID) == 28
 
 
+def test_delegation_consolidates_branches_when_branch_omitted():
+    gateway = MagicMock()
+    gateway.configured = True
+
+    def _side_effect(method, path, query=None, json_body=None):
+        branch = (query or {}).get("branch")
+        if branch == "01":
+            payload = {"success": True, "data": {"items": [], "total": 0}}
+        else:
+            payload = {
+                "success": True,
+                "data": {
+                    "items": [{"operation_code": "01", "branch": branch or "02"}],
+                    "total": 1,
+                },
+            }
+        return 200, {}, payload
+
+    gateway.request_json.side_effect = _side_effect
+    service = CtxApiDelpiDelegationService(gateway=gateway)
+    response = service.forward_json(
+        method="GET",
+        path_prefix=PRODUCTS_API_PREFIX,
+        path_suffix="/90263382/guide",
+        ctx_operation_id="ctx_get_product_guide",
+    )
+    import json
+
+    body = json.loads(response.body.decode())
+    assert body["success"] is True
+    assert len(body["data"]["items"]) == 1
+    agent = body["meta"]["agentContext"]
+    assert agent["consolidatedAcrossBranches"] is True
+    assert agent["queryStatus"] == "ok"
+    assert gateway.request_json.call_count == 2
+
+
+def test_delegation_fallback_when_explicit_branch_empty():
+    gateway = MagicMock()
+    gateway.configured = True
+    calls: list[dict | None] = []
+
+    def _side_effect(method, path, query=None, json_body=None):
+        calls.append(query)
+        branch = (query or {}).get("branch")
+        if branch == "01":
+            return 200, {}, {"success": True, "data": {"items": [], "total": 0}}
+        return (
+            200,
+            {},
+            {
+                "success": True,
+                "data": {"items": [{"operation_code": "01", "branch": "02"}], "total": 1},
+            },
+        )
+
+    gateway.request_json.side_effect = _side_effect
+    service = CtxApiDelpiDelegationService(gateway=gateway)
+    response = service.forward_json(
+        method="GET",
+        path_prefix=PRODUCTS_API_PREFIX,
+        path_suffix="/90263382/guide",
+        ctx_operation_id="ctx_get_product_guide",
+        query={"branch": "01"},
+    )
+    import json
+
+    body = json.loads(response.body.decode())
+    assert len(body["data"]["items"]) == 1
+    agent = body["meta"]["agentContext"]
+    assert agent["branchFallbackApplied"] is True
+    assert agent["consolidatedAcrossBranches"] is True
+    assert calls[0] == {"branch": "01"}
+    assert gateway.request_json.call_count == 3
+
+
 def test_delegation_normalizes_null_pagination_for_paged_list():
     gateway = MagicMock()
     gateway.configured = True

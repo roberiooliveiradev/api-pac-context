@@ -17,7 +17,10 @@
     "object.ok": "Detalhe retornado — veja os campos em data.",
     "error.gateway": "Falha ao contactar a api-delpi — trate como erro técnico, não como dado ausente no ERP.",
     "error.misconfigured": "API PAC Context sem credenciais da api-delpi — erro de infraestrutura.",
-    "error.bad_response": "Resposta inválida da api-delpi — erro técnico."
+    "error.bad_response": "Resposta inválida da api-delpi — erro técnico.",
+    "guide.empty_with_branch": "Sem roteiro SG2 na filial {branch} — o cadastro pode estar na outra filial (01/02). Tente omitir branch ou usar a filial alternativa.",
+    "branch.consolidated": "Consulta consolidada das filiais 01 e 02 (branch omitido).",
+    "branch.fallback_consolidated": "A filial informada não tinha registros; retorno consolidado das filiais 01 e 02."
   },
   "operationEmptyHints": {
     "ctx_search_products": "Nenhum produto corresponde aos filtros. Para código exato de 8 dígitos, use ctx_get_product_detail.",

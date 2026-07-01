@@ -139,8 +139,9 @@ def get_product_structure_exclusivity(
     operation_id="ctx_get_product_guide",
     summary="Roteiro de fabricação (SG2)",
     description=(
-        "Operações e centros de trabalho do produto. `items` vazio com `success: true` "
-        "significa **sem roteiro cadastrado** no ERP — não é erro de API. Informe `branch` 01 ou 02."
+        "Operações e centros de trabalho do produto. Roteiro SG2 é **por filial** — "
+        "`branch=01` com lista vazia pode significar roteiro na filial 02 (omitir branch ou trocar). "
+        "`success: true` + `items: []` não é erro de API."
     ),
 )
 def get_product_guide(
