@@ -11,7 +11,7 @@ Todas as rotas são **GET**. Resposta: envelope api-delpi (`success`, `data`, `m
 | ctx_* | Quando usar | Parâmetros principais |
 |-------|-------------|------------------------|
 | `ctx_search_products` | Resolver código por descrição, grupo, ref. cliente | `code`, `description`, `group_code`, `customer_reference`, `page`, `page_size` |
-| `ctx_get_product_detail` | Cadastro completo ou summary | `code`, `view` (`full` \| `summary`), `legacy` |
+| `ctx_get_product_detail` | **Código exato já informado** (8 dígitos) — preferir em vez de search | `code` (path), `view` (`full` \| `summary`), `legacy` |
 | `ctx_get_product_summary` | Contexto rápido (cadastro + amostra estoque) | `code` |
 | `ctx_get_product_structure` | BOM / componentes | `code`, `max_depth`, `page`, `page_size` |
 | `ctx_get_product_structure_exclusivity` | MP exclusiva / alternativas | `code`, `max_depth`, `legacy` |

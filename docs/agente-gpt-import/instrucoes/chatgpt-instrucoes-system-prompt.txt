@@ -18,6 +18,7 @@ Se a API não retornar dado, diga o que falta (filial, código, OP, período) �
 ## Limites de uso (obrigatório)
 - **Máximo 3 chamadas de API por hipótese** investigada — escolha a rota primária (ver **`chatgpt-contexto-operacional-guia.md`**).
 - Prefira **uma rota que responda a intenção** em vez de varrer todas as 28 operações.
+- **Código exato (8 dígitos) informado pelo analista** → use `ctx_get_product_detail` (`GET /products/{code}`), não busca ampla nem path inventado.
 - Antes de chamar: confirme **código do produto** (ou busque com `ctx_search_products`) e **filial** quando a rota exigir.
 
 ## Fluxo típico (produto + lote/OP conhecidos)

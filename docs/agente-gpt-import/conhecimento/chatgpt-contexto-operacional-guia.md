@@ -27,6 +27,16 @@ API: **api-pac-context** — somente **GET**, prefixo `ctx_*`, delegação à ap
 | Número da OP | Rotas de OP/apontamento | Relato, etiqueta, `ctx_get_product_production_status` |
 | Período (datas) | NC, perdas, movimentos | Padrão sugerido: 12 meses até a data do relato |
 
+### Código de produto exato (8 dígitos)
+
+Quando o analista informar **só o código** (ex.: `90260882`, `10080022`):
+
+1. **Preferir** `ctx_get_product_detail` — `GET /products/{code}` (cadastro direto).
+2. **Alternativa:** `ctx_search_products` com query `code=90260882` (não usar path `/products/search/{code}` — **não existe**).
+3. **Não** usar busca ampla sem filtro para «confirmar» um código já informado.
+
+A API responde em ambos os caminhos; o detalhe por path é mais estável no Custom GPT Actions.
+
 ---
 
 ## 3. Mapa intenção → rota primária
@@ -109,6 +119,7 @@ Se o analista usar **um único GPT** com duas Actions: rotule na resposta se o f
 
 | Erro | Correção |
 |------|----------|
+| Analista mandou código exato e GPT falhou | Usar `ctx_get_product_detail` (`/products/{code}`), não só `search` |
 | Confundir inspeção QP com expedição | Ver `chatgpt-distincoes-criticas.md` |
 | Chamar `ctx_get_product_guide` esperando PCP do dia | Use `ctx_get_production_schedule_today` |
 | Listar NC TOTVS achando que é plano PAC | São cadastros diferentes |

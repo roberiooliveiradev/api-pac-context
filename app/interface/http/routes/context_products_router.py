@@ -14,7 +14,16 @@ def _query_params(**kwargs: Any) -> dict[str, Any]:
     return {key: value for key, value in kwargs.items() if value is not None}
 
 
-@router.get("/search", operation_id="ctx_search_products")
+@router.get(
+    "/search",
+    operation_id="ctx_search_products",
+    summary="Buscar produtos (filtros opcionais)",
+    description=(
+        "Listagem paginada com filtros. Para **código exato** já informado pelo analista "
+        "(ex. 90260882), prefira `ctx_get_product_detail` em `/products/{code}`. "
+        "Parâmetro `code` = query string, não path."
+    ),
+)
 def search_products(
     code: str | None = Query(default=None),
     group_code: str | None = Query(default=None),
@@ -43,7 +52,15 @@ def search_products(
     )
 
 
-@router.get("/{code}", operation_id="ctx_get_product_detail")
+@router.get(
+    "/{code}",
+    operation_id="ctx_get_product_detail",
+    summary="Cadastro do produto por código exato",
+    description=(
+        "Use quando o analista informar o **código completo** do item (8 dígitos). "
+        "Retorna cadastro `full` ou `summary`."
+    ),
+)
 def get_product_detail(
     code: str,
     view: str = Query(default="full", description="full ou summary"),
