@@ -2,7 +2,7 @@
 
 Guia para expor a **API PAC Context** na internet (agente GPT investigador ERP).
 
-**URL pública alvo:** `https://pac-context-api.minhadelpi.com.br`
+**URL pública:** `https://pac-context-api.minhadelpi.com.br`
 
 ---
 
