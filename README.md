@@ -23,6 +23,19 @@ cp .env.example .env
 uvicorn app.asgi:application --reload --port 8011
 ```
 
+## Docker (srv-api / produção)
+
+```bash
+cd api-pac-context
+cp .env.srv-api.example .env
+cp docker-compose.override.srv-api.example.yml docker-compose.override.yml
+# preencher .env (token api-delpi + PAC_CONTEXT_API_KEY)
+docker compose up -d --build
+curl -s http://localhost:8083/health
+```
+
+Guia completo: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) · Cloudflare: [`docs/cloudflare-subdominio-pac-context-api.md`](docs/cloudflare-subdominio-pac-context-api.md)
+
 ## Testes
 
 ```bash

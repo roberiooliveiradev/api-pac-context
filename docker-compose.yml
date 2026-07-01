@@ -1,0 +1,61 @@
+# Stack standalone: API PAC Context + nginx próprio.
+#
+# Build context = pasta pai `projetos/` (`api-pac-context/Dockerfile`).
+#
+#   cd api-pac-context
+#   cp .env.example .env
+#   docker compose up -d --build
+#
+# Público: GET http://localhost:${NGINX_HTTP_PORT:-8083}/health  (via nginx)
+
+name: api-pac-context
+
+services:
+  api-pac-context:
+    build:
+      context: ..
+      dockerfile: api-pac-context/Dockerfile
+    image: api-pac-context:latest
+    container_name: api-pac-context
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      API_PAC_CONTEXT_PORT: "8011"
+      API_PAC_ROOT_PATH: ${API_PAC_ROOT_PATH:-}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-https://pac-context-api.minhadelpi.com.br}
+    expose:
+      - "8011"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8011/health', timeout=3)",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - ctx-network
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: api-pac-context-nginx:latest
+    container_name: api-pac-context-nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_HTTP_PORT:-8083}:80"
+    depends_on:
+      api-pac-context:
+        condition: service_healthy
+    networks:
+      - ctx-network
+
+networks:
+  ctx-network:
+    driver: bridge

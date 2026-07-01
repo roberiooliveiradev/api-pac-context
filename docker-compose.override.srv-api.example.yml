@@ -1,0 +1,23 @@
+# Conecta api-pac-context à rede Docker do delpi-central (api-delpi).
+#
+# Uso:
+#   cd ~/projetos/api-pac-context
+#   docker network ls | grep delpi          # anote o nome (ex.: infra_delpi-network)
+#   cp docker-compose.override.srv-api.example.yml docker-compose.override.yml
+#   docker compose up -d --build
+#
+# Sem Postgres local — somente delegação S2S à api-delpi.
+
+services:
+  api-pac-context:
+    networks:
+      - ctx-network
+      - delpi-network
+    environment:
+      API_DELPI_BASE_URL: http://delpi-api-delpi:8000
+      # API_DELPI_INTERNAL_SERVICE_TOKEN: copiar do delpi-central/infra/.env
+
+networks:
+  delpi-network:
+    external: true
+    name: infra_delpi-network
