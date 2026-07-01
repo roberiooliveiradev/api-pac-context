@@ -4,10 +4,10 @@ BFF de **somente leitura** que delega à **api-delpi** com autenticação S2S. C
 
 Espelha o padrão da [api-pac-quality](../api-pac-quality). Playbook: [playbook-api-contexto-operacional-gpt.md](../api-pac-quality/docs/playbook-api-contexto-operacional-gpt.md).
 
-## Fase atual (P1)
+## Fase atual (P2)
 
 - Health, auth (`PAC_CONTEXT_API_KEY`), gateway S2S
-- **10 rotas** de produto (`ctx_search_products` … `ctx_get_product_shipping_status`)
+- **28 rotas** allowlist §8 playbook (produto + PCP + qualidade TOTVS)
 - Gate CI: `scripts/audit_ctx_openapi_operation_limit.py --check`
 
 ## Execução local
@@ -49,6 +49,6 @@ chmod +x scripts/ci-smoke.sh
 
 | Fase | Entrega |
 |------|---------|
-| P1 | 10 rotas produto (este repo) |
-| P2 | +18 rotas PCP/qualidade (allowlist §8 playbook) |
+| P1 | 10 rotas produto |
+| P2 | +18 rotas PCP/qualidade (allowlist §8 — **28 ops**) |
 | P3 | Composites (`ctx_investigate_product`, …) |

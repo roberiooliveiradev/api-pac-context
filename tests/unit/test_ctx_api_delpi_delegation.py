@@ -54,3 +54,4 @@ def test_delpi_to_ctx_mapping_keys():
     assert DELPI_TO_CTX_OPERATION_ID["get_product_production_status"] == (
         "ctx_get_product_production_status"
     )
+    assert len(DELPI_TO_CTX_OPERATION_ID) == 28

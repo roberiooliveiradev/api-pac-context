@@ -205,3 +205,85 @@ def get_product_shipping_status(
             legacy=legacy,
         ),
     )
+
+
+@router.get("/{code}/stock", operation_id="ctx_get_product_stock")
+def get_product_stock(
+    code: str,
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=50, ge=1, le=500),
+    branch: str | None = Query(default=None),
+    warehouse: str | None = Query(default=None),
+    location: str | None = Query(default=None),
+    legacy: bool = Query(default=False),
+):
+    return delegate_json(
+        method="GET",
+        path_prefix=PRODUCTS_API_PREFIX,
+        path_suffix=f"/{code}/stock",
+        ctx_operation_id="ctx_get_product_stock",
+        query=_query_params(
+            page=page,
+            page_size=page_size,
+            branch=branch,
+            warehouse=warehouse,
+            location=location,
+            legacy=legacy,
+        ),
+    )
+
+
+@router.get("/{code}/internal-movements", operation_id="ctx_get_product_internal_movements")
+def get_product_internal_movements(
+    code: str,
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=50, ge=1, le=500),
+    date_start: str | None = Query(default=None),
+    date_end: str | None = Query(default=None),
+    branch: str | None = Query(default=None),
+    location: str | None = Query(default=None),
+    tm: str | None = Query(default=None),
+    op: str | None = Query(default=None),
+):
+    return delegate_json(
+        method="GET",
+        path_prefix=PRODUCTS_API_PREFIX,
+        path_suffix=f"/{code}/internal-movements",
+        ctx_operation_id="ctx_get_product_internal_movements",
+        query=_query_params(
+            page=page,
+            page_size=page_size,
+            date_start=date_start,
+            date_end=date_end,
+            branch=branch,
+            location=location,
+            tm=tm,
+            op=op,
+        ),
+    )
+
+
+@router.get("/{code}/parents", operation_id="ctx_get_product_parents")
+def get_product_parents(
+    code: str,
+    max_depth: int | None = Query(default=None),
+    page: int | None = Query(default=None),
+    page_size: int | None = Query(default=None),
+):
+    return delegate_json(
+        method="GET",
+        path_prefix=PRODUCTS_API_PREFIX,
+        path_suffix=f"/{code}/parents",
+        ctx_operation_id="ctx_get_product_parents",
+        query=_query_params(max_depth=max_depth, page=page, page_size=page_size),
+    )
+
+
+@router.get("/{code}/drawing", operation_id="ctx_get_product_drawing")
+def get_product_drawing(code: str):
+    return delegate_json(
+        method="GET",
+        path_prefix=PRODUCTS_API_PREFIX,
+        path_suffix=f"/{code}/drawing",
+        ctx_operation_id="ctx_get_product_drawing",
+    )

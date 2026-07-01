@@ -11,7 +11,7 @@ class RouteContract:
     shape: str
 
 
-# Fase P1 — produto (10 rotas). Meta completa §8 playbook: 28 ops (fase P2).
+# Allowlist completa playbook §8 — 28 operações (P1 produto base + P2 PCP/qualidade).
 ANALYST_CONTEXT_OPERATION_IDS: frozenset[str] = frozenset(
     {
         "ctx_search_products",
@@ -24,6 +24,24 @@ ANALYST_CONTEXT_OPERATION_IDS: frozenset[str] = frozenset(
         "ctx_get_product_production_status",
         "ctx_get_product_factory_status",
         "ctx_get_product_shipping_status",
+        "ctx_get_product_stock",
+        "ctx_get_product_internal_movements",
+        "ctx_get_product_parents",
+        "ctx_get_product_drawing",
+        "ctx_get_production_order_by_op",
+        "ctx_get_production_oee_appointment",
+        "ctx_list_production_oee",
+        "ctx_get_production_schedule_today",
+        "ctx_get_production_orders_open",
+        "ctx_get_production_orders_finished",
+        "ctx_get_production_planned_vs_real",
+        "ctx_get_production_losses_records",
+        "ctx_get_production_losses_top_materials",
+        "ctx_get_production_consumption_by_item",
+        "ctx_list_nonconformities",
+        "ctx_get_inspecoes_entrada_historico",
+        "ctx_get_inspecoes_entrada_detalhe",
+        "ctx_get_produced_quantity",
     }
 )
 
@@ -52,6 +70,60 @@ ROUTE_CONTRACTS: dict[str, RouteContract] = {
         "product_shipping_status",
         "playbook_report",
     ),
+    "ctx_get_product_stock": RouteContract("product_stock", "paged_list"),
+    "ctx_get_product_internal_movements": RouteContract(
+        "product_internal_movements",
+        "paged_list",
+    ),
+    "ctx_get_product_parents": RouteContract("product_parents", "hierarchy"),
+    "ctx_get_product_drawing": RouteContract("product_drawing", "scalar"),
+    "ctx_get_production_order_by_op": RouteContract(
+        "production_order_detail",
+        "playbook_report",
+    ),
+    "ctx_get_production_oee_appointment": RouteContract(
+        "production_oee_appointment",
+        "composite_analysis",
+    ),
+    "ctx_list_production_oee": RouteContract("production_oee_detail", "paged_list"),
+    "ctx_get_production_schedule_today": RouteContract(
+        "production_schedule_today",
+        "playbook_report",
+    ),
+    "ctx_get_production_orders_open": RouteContract(
+        "production_orders_open",
+        "playbook_report",
+    ),
+    "ctx_get_production_orders_finished": RouteContract(
+        "production_orders_finished",
+        "playbook_report",
+    ),
+    "ctx_get_production_planned_vs_real": RouteContract(
+        "production_planned_vs_real_time",
+        "playbook_report",
+    ),
+    "ctx_get_production_losses_records": RouteContract(
+        "production_losses_records",
+        "playbook_report",
+    ),
+    "ctx_get_production_losses_top_materials": RouteContract(
+        "production_losses_top_materials",
+        "playbook_report",
+    ),
+    "ctx_get_production_consumption_by_item": RouteContract(
+        "production_consumption_by_item",
+        "playbook_report",
+    ),
+    "ctx_list_nonconformities": RouteContract("nonconformity", "paged_list"),
+    "ctx_get_inspecoes_entrada_historico": RouteContract(
+        "inspecoes_entrada_historico",
+        "paged_list",
+    ),
+    "ctx_get_inspecoes_entrada_detalhe": RouteContract(
+        "inspecoes_entrada_historico_detalhe",
+        "object",
+    ),
+    "ctx_get_produced_quantity": RouteContract("produced_quantity", "playbook_report"),
 }
 
 

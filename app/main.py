@@ -16,7 +16,12 @@ from app.config import settings
 from app.core.responses import error_response, not_found_response
 from app.interface.http.middleware.ctx_auth_middleware import ctx_auth_middleware
 from app.interface.http.openapi_schema import build_openapi_schema
+from app.interface.http.routes.context_inspecoes_entrada_router import (
+    router as inspecoes_entrada_router,
+)
+from app.interface.http.routes.context_production_router import router as production_router
 from app.interface.http.routes.context_products_router import router as products_router
+from app.interface.http.routes.context_quality_router import router as quality_router
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +66,9 @@ app.add_middleware(
 app.middleware("http")(ctx_auth_middleware)
 app.openapi = lambda: build_openapi_schema(app)
 app.include_router(products_router)
+app.include_router(production_router)
+app.include_router(quality_router)
+app.include_router(inspecoes_entrada_router)
 
 
 @app.get("/health", include_in_schema=False)
@@ -72,8 +80,8 @@ def health():
         "status": status,
         "service": "api-pac-context",
         "api_delpi_delegation": delegation_status,
-        "published_operations": 10,
-        "phase": "P1-products",
+        "published_operations": 28,
+        "phase": "P2",
     }
 
 
