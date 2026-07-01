@@ -18,6 +18,9 @@ from app.interface.http.middleware.ctx_auth_middleware import ctx_auth_middlewar
 from app.interface.http.middleware.normalize_query_params_middleware import (
     normalize_query_params_middleware,
 )
+from app.interface.http.middleware.strip_trailing_slash_middleware import (
+    strip_trailing_slash_middleware,
+)
 from app.interface.http.openapi_schema import build_openapi_schema
 from app.interface.http.routes.context_inspecoes_entrada_router import (
     router as inspecoes_entrada_router,
@@ -57,6 +60,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
+    redirect_slashes=False,
 )
 
 app.add_middleware(
@@ -66,6 +70,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.middleware("http")(strip_trailing_slash_middleware)
 app.middleware("http")(normalize_query_params_middleware)
 app.middleware("http")(ctx_auth_middleware)
 app.openapi = lambda: build_openapi_schema(app)
